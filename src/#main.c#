@@ -146,10 +146,10 @@ int main(int argc, char *argv[]){
     block[i].w = WIDTH/10;		
     block[i].h = HEIGHT/20;
   }
-
+  
   printf("i, block[i].x, block[i].y");
   cnt = 0;
-  for(int i = 0; i < 200; i++){
+  for(int i = 0; i < 200; i++){iiiiiiiii,
     printf("%d: %d %d || ",i , block[i].x, block[i].y);
     if(cnt >= 10){
       printf("\n");
@@ -165,6 +165,7 @@ int main(int argc, char *argv[]){
   int copy_board[200];
   cnt = 0;
   int flag_user_occupied = 1;
+  spawn_tetromino(board, 1);
 
   time_t start_time;
   start_time = time(NULL);
@@ -183,7 +184,7 @@ int main(int argc, char *argv[]){
 	fall_tetromino(board, &flag_user_occupied);
       }
       else if(flag_user_occupied == 0){
-	spawn_tetromino(board, 0);//get_magic rng doesnt work yet, puts out garbage, do 0 instead.
+	spawn_tetromino(board, get_magic());
 	flag_user_occupied = 1;
       }
 
@@ -196,9 +197,6 @@ int main(int argc, char *argv[]){
  		  
       case SDL_KEYDOWN:
 	printf("[INPUT]:\t");
-	if(event.key.keysym.sym==SDLK_c){
-	  rotate_cw(board, &flag_user_occupied, 0);
-	}
 	if(event.key.keysym.sym==SDLK_UP){
 	  printf("UP\n");
 	}
@@ -282,6 +280,7 @@ int main(int argc, char *argv[]){
   }
 
   /* SDL ended  */
+
   free(board);
 
   /*Exit SDL*/

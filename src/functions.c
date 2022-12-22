@@ -3,35 +3,99 @@
 int ** create_board();
 void spawn_tetromino(int **board, int magic);
 void fall_tetromino(int **board, int *flag_user_occupied);
-int ** get_user_indices(int **board); 
+int ** get_user_indices(int **board);
 void convert_to_garbage(int **board, int **indices);
 void print_board(int **board);
 void move_tetromino_left(int **board, int *flag_user_occupied);
 void move_tetromino_right(int **board, int *flag_user_occupied);
-int get_magic();                      
+int get_magic();
 void toggle_flag_user_occupied(int *flag, int on);
-void rotate_cw(int **board, int *flag_user_occupied, int *magic);
+void rotate_cw(int **board, int *flag_user_occupied, int magic);
+void harddrop(int **board);
 
-/* Magic number table: 
- * 	0: I, 1: O, 2: L, 3:J, 4:T, 5:S, 6:Z*/
-void rotate_cw(int **board, int *flag_user_occupied){
 
-  if(*flag_user_occupied == 1){
+void harddrop(int **board){
 
-    switch(magic){
-    case 0:
-
-      
-      
+  int cnt = 0;
+  for(int row=0; row<20; row++){
+    for(int col=0; col<10; col++){
+      if(board[row][col] == 1){cnt++;}
     }
-    
   }
-  else return;
+  if(cnt != 4){
+    return;
+  }
 
+  /* Go down rows, check if 0 or end, if 0 or end, then convert to garbage at loc.  */
+  
 }
 
+void rotate_cw(int **board, int *flag_user_occupied, int magic){
+
+  if(*flag_user_occupied == 0){
+    return;
+  }
+  
+  int cnt = 0;
+  for(int row=0; row<20; row++){
+    for(int col=0; col<10; col++){
+      if(board[row][col] == 1){cnt++;}
+    }
+  }
+  if(cnt != 4){
+    return;
+  }
+  
+  switch(magic){
+  case 0:
+    
+    /* Save user coordinates. Then erase said coordinates to
+       set new coordinates. */
+
+    int **user_indices = get_user_indices(board);
+    
+    int row = user_indices[0][0];
+
+    int col0 = user_indices[0][1];
+    int col1 = user_indices[1][1];
+    int col2 = user_indices[2][1];
+    int col3 = user_indices[3][1];
+
+    /* If no corner move to rotate. */
+    /* Get min row values for orientation purposes.  */
+    int col[4] = {col0, col1, col2, col3};
+    int min = 31;
+    
+    for(int i=0; i<4; i++){
+      if(col[i] < min){min = col[i];}
+    }
+
+    /* Check whether block is movable to rotatable else return.  */
+    for(int i=0; i<4; i++){
+      if(board[row-1+i][min + 2] != EMPTY){
+	return;
+      }
+      else if(row == 0){
+	return;
+      }
+    }
+
+    for(int i=0; i<4; i++){
+
+      board[user_indices[i][0]][user_indices[i][1]] = -1;
+
+    }
+
+    for(int i=0; i<4; i++){
+      board[rowc-1+i][min + 2] = 1;
+    }    
+  }
+}
+/* Magic number table:
+ * 0: I, 1: O, 2: L, 3:J, 4:T, 5:S, 6:Z*/
+//TODO: rotate
 int ** create_board(){
-	
+
   int **row = calloc(ROW, sizeof(int *));
 
   if(!row){
@@ -43,9 +107,9 @@ int ** create_board(){
   }
 
   for (int i=0; i<ROW; i++){
-		
+
     /* Calloc returns a pointer to the allocated memory.
-     * Thus for every row store a pointer in the heap of row 
+     * Thus for every row store a pointer in the heap of row
      * to the first index of the allocated memory of COL
      * blocks. Each block has a size of int. */
 
@@ -53,7 +117,7 @@ int ** create_board(){
 
 
   }
-	
+
   if(!*row){
 
     perror("calloc");
@@ -66,9 +130,9 @@ int ** create_board(){
 
     for (int j=0; j<COL; j++){
 
-      row[i][j] = EMPTY;		
+      row[i][j] = EMPTY;
 
-    }		
+    }
 
   }
 
@@ -76,21 +140,21 @@ int ** create_board(){
 
 }
 
-/* Dependend the magic number spawn a tetrimino under user 
+/* Dependend the magic number spawn a tetrimino under user
  * influence in the board pointed to by board.  */
-/* Magic number table: 
- * 	0: I, 1: O, 2: L, 3:J, 4:T, 5:S, 6:Z*/
+/* Magic number table:
+ * 0: I, 1: O, 2: L, 3:J, 4:T, 5:S, 6:Z*/
 void spawn_tetromino(int **board, int magic){
 
   switch(magic){
-		
-  case 0:	
-			
+
+  case 0:
+
     /* If all blocks are EMPTY (= -1)  spawn the I tetromino. 4 empty blocks always
      * have a value of -1. Therefore if they are not all empty, they do
      * not add up to 4*EMPTY. */
     if((board[0][3] + board[0][4] + board[0][5] + board[0][6]) == 4*EMPTY){
-				
+
       for(int i=3; i<7; i++){
 
 	board[0][i] = USER;
@@ -105,11 +169,11 @@ void spawn_tetromino(int **board, int magic){
       return;
 
     }
-		
+
   case 1:
-				
+
     if((board[1][4] + board[0][4] + board[0][5] + board[1][5]) == 4*EMPTY){
-				
+
       for(int i=4; i<6; i++){
 	for(int j=0; j<2; j++){
 	  board[j][i] = USER;
@@ -122,12 +186,11 @@ void spawn_tetromino(int **board, int magic){
     }
 
   case 2:
-			
+
     if((board[1][3] + board[1][4] + board[1][5] + board[0][5]) == 4*EMPTY){
-				
+
       for(int i=3; i<6; i++){
 	board[1][i] = USER;
-
       }
       board[0][5] = USER;
 
@@ -139,7 +202,7 @@ void spawn_tetromino(int **board, int magic){
   case 3:
 
     if((board[1][3] + board[1][4] + board[1][5] + board[0][3]) == 4*EMPTY){
-				
+
       for(int i=3; i<6; i++){
 	board[1][i] = USER;
 
@@ -152,9 +215,9 @@ void spawn_tetromino(int **board, int magic){
       return;
     }
   case 4:
-			
+
     if((board[1][3] + board[1][4] + board[1][5] + board[0][4]) == 4*EMPTY){
-				
+
       for(int i=3; i<6; i++){
 	board[1][i] = USER;
 
@@ -169,7 +232,7 @@ void spawn_tetromino(int **board, int magic){
   case 5:
 
     if((board[1][3] + board[1][4] + board[0][5] + board[0][4]) == 4*EMPTY){
-				
+
       for(int i=3; i<5; i++){
 	board[1][i] = USER;
       }
@@ -185,7 +248,7 @@ void spawn_tetromino(int **board, int magic){
   case 6:
 
     if((board[0][3] + board[1][4] + board[1][5] + board[0][4]) == 4*EMPTY){
-				
+
       for(int i=4; i<6; i++){
 	board[1][i] = USER;
       }
@@ -200,33 +263,32 @@ void spawn_tetromino(int **board, int magic){
     }
 
   }
-		
-			
+
+
 
 }
 
 /* Get indices of all blocks currently under user influence.  */
 int ** get_user_indices(int **board){
-	
+
   int flag_user_block = 0;
 
   int **indices = malloc(4*sizeof(int *));
 
   for(int i=0; i<4; i++){
-		
+
     indices[i] = malloc(2*sizeof(int));
 
   }
-
 
   int row_index = 0;
 
   for(int i=0; i<ROW; i++){
 
-    for(int j=0; j<COL; j++){	
+    for(int j=0; j<COL; j++){
 
       if(board[i][j] == USER){
-				
+
 	flag_user_block = 1;
 
 	indices[row_index][0] = i;
@@ -238,15 +300,13 @@ int ** get_user_indices(int **board){
     }
 
   }
-	
+
   /* If no block under user influence return NULL pointer  */
   if(!flag_user_block){
 
     for(int i=0; i<4; i++){
-
       indices[i][0] = -1;
       indices[i][1] = -1;
-			
     }
 
   }
@@ -260,25 +320,25 @@ void fall_tetromino(int **board, int *flag_user_occupied){
 
   if(!board){
     printf("Warning: in fall_tetromino(int **board, int *flag_user_occupied): int **board is empty.");
-  }	
+  }
 
-  /* user_indices = 
+  /* user_indices =
    * row 0 = (col 0 = i,col 1 = j)
    * row 1 = ...
    * row 2 = ...
    * row 3 = ... , where board[i][j] = 1*/
 
   int **user_indices = get_user_indices(board);
-	
+
   if(!user_indices){
 
     printf("Warning: in fall_tetromino(int **board, int *flag_user_occupied): int **user_indices is empty.");
 
   }
 
-  /* Check if the next block under each USER block is EMPTY, else after delay 
+  /* Check if the next block under each USER block is EMPTY, else after delay
    * convert USER block to GARBAGE block.  */
-	
+
   /* Check availability else GARBAGE.  */
 
   /* Check whether user block even exists. If it does not the pointer is NULL.
@@ -290,7 +350,7 @@ void fall_tetromino(int **board, int *flag_user_occupied){
   for(int i=0; i<4; i++){
 
     if(user_indices[i][0] < 19){
-		
+
       if(board[user_indices[i][0]+1][user_indices[i][1]] == 0){
 	flag_not_empty = 1;
       }
@@ -336,7 +396,7 @@ void convert_to_garbage(int **board, int **indices){
 
     printf("Warning: in convert_to_garbage(int **board, int **indices): int **board is empty.");
 
-  }	
+  }
 
   if(!indices){
 
@@ -347,7 +407,7 @@ void convert_to_garbage(int **board, int **indices){
   if(indices[0][0] != -1){
 
     for(int i=0; i<4; i++){
-			
+
       board[indices[i][0]][indices[i][1]] = 0;
 
     }
@@ -362,7 +422,7 @@ void convert_to_garbage(int **board, int **indices){
 void print_board(int **board){
 
   for(int i=0; i<20; i++){
-		
+
     SDL_Delay(DELAY);
 
     //fall_tetromino(board);
@@ -372,7 +432,7 @@ void print_board(int **board){
     printf("[INFO]:\n");
     for(int i=0; i<ROW; i++){
       for(int j=0; j<COL;j++){
-	if(board[i][j] != EMPTY){	
+	if(board[i][j] != EMPTY){
 	  printf("|  \033[33m%d\033[0m |", board[i][j]);
 	}
 	else{
@@ -385,7 +445,7 @@ void print_board(int **board){
 	}
       }
     }
-  }	
+  }
 
 
 }
@@ -399,10 +459,10 @@ void move_tetromino_left(int **board, int *flag_user_occupied){
 
   /* Check whether block is movable to left or blocked by wall.  */
   for(int i=0; i<4; i++){
-		
-    if(user_indices[i][1] == 0){
+
+    if(board[user_indices[i][0]][user_indices[i][1] - 1] == 0){
       return;
-    }		
+    }
   }
   /* If no corner move to left.  */
 
@@ -416,7 +476,7 @@ void move_tetromino_left(int **board, int *flag_user_occupied){
 }
 
 void move_tetromino_right(int **board, int *flag_user_occupied){
-	
+
   if(*flag_user_occupied == 0){
     return;
   }
@@ -424,11 +484,15 @@ void move_tetromino_right(int **board, int *flag_user_occupied){
   int **user_indices = get_user_indices(board);
 
   /* Check whether block is movable to right or blocked by wall.  */
+  
   for(int i=0; i<4; i++){
-		
+
     if(user_indices[i][1] == 9){
       return;
-    }		
+    }
+    if(board[user_indices[i][0]][user_indices[i][1] + 1] == 0){
+      return;
+    }      
   }
   /* If no corner move to right.  */
 
@@ -441,10 +505,11 @@ void move_tetromino_right(int **board, int *flag_user_occupied){
 
 }
 int get_magic(){
-	
+
   srand(time(NULL));
 
-  return (rand() % 6);
+  //  return (rand() % 6);
+  return 0;
 
 }
 
