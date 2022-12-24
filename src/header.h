@@ -1,12 +1,6 @@
 #pragma once
 
-#define ROW 20
-#define COL 10
-#define EMPTY -1
-#define USER 1
-#define GARBAGE 0
 #define DELAY 0.1
-
 #define WIDTH 						500
 #define HEIGHT 						1000 
 
