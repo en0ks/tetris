@@ -20,26 +20,32 @@ struct User_Tetromino{
 
 struct Garbage{
   SDL_Rect garbage_blocks[200];
+  int cnt_garbage;
 };
 
-void garbage(struct User_Tetromino *user_tetromino);
+int check_garbage(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
 void mov_r(struct User_Tetromino *user_tetromino);
 void mov_l(struct User_Tetromino *user_tetromino);
-void gravitate(struct User_Tetromino *user_tetromino);
+void gravitate(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
 void spawn(struct User_Tetromino *user_tetromino, int type);
 
-void garbage(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
+
+int check_garbage(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
 
   int x0 = user_tetromino->tetromino.blocks[0].x;
   int y0 = user_tetromino->tetromino.blocks[0].y;
 
-  for(int i=0; i<(WIDTH/10)(HEIGHT/20); i++){
-    if(x0 == garbage->garbage_blocks[i].x && y0 == (garbage->garbage_blocks[i].y - HEIGHT/20)){
-      
+  for(int i=0; i<200; i++){
+    if(x0 == garbage->garbage_blocks[i].x && y0 == (garbage->garbage_blocks[i].y - 50)){
+      if(garbage->cnt_garbage > 199){
+	printf("WARNING: exceeding bounds in garbage for garbage_blocks.");
+      }
+      return 1;
     }
+    else return 0;
     
   }
-  return;
+  return -1;
 }
 
 void mov_r(struct User_Tetromino *user_tetromino){
@@ -58,11 +64,23 @@ void mov_l(struct User_Tetromino *user_tetromino){
   return;
 }
 
-void gravitate(struct User_Tetromino *user_tetromino){
+void gravitate(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
 
-  int y0 = user_tetromino->tetromino.blocks[0].y;
-  user_tetromino->tetromino.blocks[0].y = y0 + HEIGHT/20;
+  int var = check_garbage(user_tetromino, garbage);
 
+  if(var  == -1){
+    printf("WARNING: in check_garbage no definite result.");
+      }
+  else if(var == 0){
+    int y0 = user_tetromino->tetromino.blocks[0].y;
+    user_tetromino->tetromino.blocks[0].y = y0 + HEIGHT/20;  
+  }
+  else if(var == 1){
+    garbage->garbage_blocks[garbage->cnt_garbage++] = user_tetromino->tetromino.blocks[0];
+    user_tetromino->busy = 0;
+    spawn(user_tetromino, 4);
+  }
+  
   return;
 }
 
