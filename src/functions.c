@@ -10,17 +10,13 @@ struct Tetromino{
 struct User_Tetromino{
   struct Tetromino tetromino;
   int busy;
-  int rot_l;
-  int rot_r;
-  int mov_l;
-  int mov_r;
-  int hdrop;
-  int sdrop;
 };
 
+//TODO Better way to implement garbage blocks. This time add baseline in f: check_garbage
+//and add garbage tetrominos consisting of blocks to garbage struct which will be rendered
+//every while loop in main.
 struct Garbage{
-  SDL_Rect garbage_blocks[200];
-  int cnt_garbage;
+  struct Tetromino tetromino[50];
 };
 
 int check_garbage(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
@@ -32,19 +28,7 @@ void spawn(struct User_Tetromino *user_tetromino, int type);
 
 int check_garbage(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
 
-  int x0 = user_tetromino->tetromino.blocks[0].x;
-  int y0 = user_tetromino->tetromino.blocks[0].y;
 
-  for(int i=0; i<200; i++){
-    if(x0 == garbage->garbage_blocks[i].x && y0 == (garbage->garbage_blocks[i].y - 50)){
-      if(garbage->cnt_garbage > 199){
-	printf("WARNING: exceeding bounds in garbage for garbage_blocks.");
-      }
-      return 1;
-    }
-    else return 0;
-    
-  }
   return -1;
 }
 
@@ -76,9 +60,7 @@ void gravitate(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
     user_tetromino->tetromino.blocks[0].y = y0 + HEIGHT/20;  
   }
   else if(var == 1){
-    garbage->garbage_blocks[garbage->cnt_garbage++] = user_tetromino->tetromino.blocks[0];
-    user_tetromino->busy = 0;
-    spawn(user_tetromino, 4);
+    //
   }
   
   return;

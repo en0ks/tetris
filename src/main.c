@@ -125,7 +125,7 @@ int main(int argc, char *argv[]){
     SDL_RenderFillRects(renderer, user_tetromino.tetromino.blocks, 4);
     
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0xFF, SDL_ALPHA_OPAQUE);        
-    SDL_RenderFillRects(renderer, garbage.garbage_blocks, garbage.cnt_garbage);
+    //SDL_RenderFillRects(renderer, garbage.garbage_blocks, garbage.cnt_garbage);
     
     //printf("%d:%d:%d:%d \n", user_tetromino.tetromino.blocks[0].x, user_tetromino.tetromino.blocks[0].y, user_tetromino.tetromino.blocks[0].w, user_tetromino.tetromino.blocks[0].h);
       
