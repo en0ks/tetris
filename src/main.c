@@ -50,10 +50,11 @@ int main(int argc, char *argv[]){
 
   struct User_Tetromino user_tetromino = {0};  
   struct Garbage garbage = {0};
-
-
-  
-  spawn(&user_tetromino, 4);
+ 
+  SDL_Rect init_rect = {-1, -1, 50, 50};
+  for(int i=0; i<50; i++){
+    garbage.tetromino->blocks[i] = init_rect;
+  }
 
   //TODO: implement converting to garbage when block hits height 950.
  
@@ -64,13 +65,14 @@ int main(int argc, char *argv[]){
       start_time = time(NULL);
 
       /* Fall code. */
-      gravitate(&user_tetromino, &garbage);
       
       if(user_tetromino.busy == 1){
 	//fall
+	gravitate(&user_tetromino, &garbage);
       }
       else if(user_tetromino.busy == 0){
 	//spawn
+	spawn(&user_tetromino, 4);	
 	//in f_spawn create 4 blocks and put them in user.
       }
       else{
@@ -125,9 +127,8 @@ int main(int argc, char *argv[]){
     SDL_RenderFillRects(renderer, user_tetromino.tetromino.blocks, 4);
     
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0xFF, SDL_ALPHA_OPAQUE);        
-    //SDL_RenderFillRects(renderer, garbage.garbage_blocks, garbage.cnt_garbage);
+    SDL_RenderFillRects(renderer, garbage.tetromino->blocks, garbage.cnt);
     
-    //printf("%d:%d:%d:%d \n", user_tetromino.tetromino.blocks[0].x, user_tetromino.tetromino.blocks[0].y, user_tetromino.tetromino.blocks[0].w, user_tetromino.tetromino.blocks[0].h);
       
       
     /* Render rectangles.  */

@@ -12,11 +12,9 @@ struct User_Tetromino{
   int busy;
 };
 
-//TODO Better way to implement garbage blocks. This time add baseline in f: check_garbage
-//and add garbage tetrominos consisting of blocks to garbage struct which will be rendered
-//every while loop in main.
 struct Garbage{
   struct Tetromino tetromino[50];
+  int cnt;
 };
 
 int check_garbage(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
@@ -28,8 +26,20 @@ void spawn(struct User_Tetromino *user_tetromino, int type);
 
 int check_garbage(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
 
+  if(user_tetromino->tetromino.blocks[0].y == 950){  
+    return 1;
+  }
+  else {
+    for(int i=0; i<50; i++){
+      if(user_tetromino->tetromino.blocks[0].x == garbage->tetromino->blocks[i].x){
+	if((user_tetromino->tetromino.blocks[0].y + 50) == garbage->tetromino->blocks[i].y){
+	  return 1;
+	}
+      }
+    }
+  }
 
-  return -1;
+  return 0;
 }
 
 void mov_r(struct User_Tetromino *user_tetromino){
@@ -52,15 +62,15 @@ void gravitate(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
 
   int var = check_garbage(user_tetromino, garbage);
 
-  if(var  == -1){
-    printf("WARNING: in check_garbage no definite result.");
-      }
+  if(var == 1){
+    user_tetromino->busy = 0;
+    garbage->tetromino->blocks[garbage->cnt].x = user_tetromino->tetromino.blocks[0].x;
+    garbage->tetromino->blocks[garbage->cnt].y = user_tetromino->tetromino.blocks[0].y;
+    garbage->cnt++;
+  }
   else if(var == 0){
     int y0 = user_tetromino->tetromino.blocks[0].y;
-    user_tetromino->tetromino.blocks[0].y = y0 + HEIGHT/20;  
-  }
-  else if(var == 1){
-    //
+    user_tetromino->tetromino.blocks[0].y = y0 + HEIGHT/20;     
   }
   
   return;
