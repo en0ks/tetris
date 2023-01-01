@@ -18,97 +18,73 @@ struct Garbage{
 };
 
 int check_garbage(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
-void mov_r(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
-void mov_l(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
+void mov(struct User_Tetromino *user_tetromino, struct Garbage *garbage, int direction);
 void gravitate(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
 void spawn(struct User_Tetromino *user_tetromino, int type);
-void hdrop(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
+void sdrop(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
+void signal_handler(int signum, int *flag);
 
-
-void hdrop(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
-
-  for(int i=0; i<20; i++){
-    for(int j=0; j<50; j++){
-
-      if((user_tetromino->tetromino.blocks[0].y + 50*i) == garbage->tetromino->blocks[j].y){
-	if(user_tetromino->tetromino.blocks[0].x == garbage->tetromino->blocks[j].x){
-	  
-	  user_tetromino->busy = 0;
-	  garbage->tetromino->blocks[garbage->cnt].x = user_tetromino->tetromino.blocks[0].x;
-	  garbage->tetromino->blocks[garbage->cnt].y = garbage->tetromino->blocks[j].y - 50;
-	  garbage->cnt++;
-
-	  return;
-	}
-      
-      }
-
-    }
-    if(50*i == 950){
-      user_tetromino->busy = 0;
-      garbage->tetromino->blocks[garbage->cnt].x = user_tetromino->tetromino.blocks[0].x;
-      garbage->tetromino->blocks[garbage->cnt].y = 950;
-      garbage->cnt++;
-    }
-  }
-  
-  return;
+void signal_handler(int signum, int *flag){
+  *flag = 1;
 }
 
 int check_garbage(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
 
-  if(user_tetromino->tetromino.blocks[0].y == 950){  
-    return 1;
+  for(int i=0; i<4; i++){    
+    if(user_tetromino->tetromino.blocks[i].y == 950){  
+      return 1;
+    }     
   }
-  else {
-    for(int i=0; i<50; i++){
-      if(user_tetromino->tetromino.blocks[0].x == garbage->tetromino->blocks[i].x){
-	if((user_tetromino->tetromino.blocks[0].y + 50) == garbage->tetromino->blocks[i].y){
+  
+  for(int i=0; i<garbage->cnt; i++){
+    for(int j=0; j<4; j++){
+      if(garbage->tetromino->blocks[i].y - user_tetromino->tetromino.blocks[j].y == 50){
+	if(garbage->tetromino->blocks[i].x == user_tetromino->tetromino.blocks[j].x){
 	  return 1;
 	}
-      }
     }
+    } 
   }
-
+  
+  
   return 0;
 }
 
-void mov_r(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
+void mov(struct User_Tetromino *user_tetromino, struct Garbage *garbage, int direction){
 
-  for(int i=0; i<50; i++){
-    if((user_tetromino->tetromino.blocks[0].x + 50) == garbage->tetromino->blocks[i].x){
-      if(user_tetromino->tetromino.blocks[0].y == garbage->tetromino->blocks[i].y){
-	return;
-      }      
-    }    
-  }
-
-  if(user_tetromino->tetromino.blocks[0].x == 450){
-    return;
+  int offset = 0;
+  if(direction == 1){
+    offset = 100;
   }
   
-  int x0 = user_tetromino->tetromino.blocks[0].x;
-  user_tetromino->tetromino.blocks[0].x = x0 + WIDTH/10;
-  
-  return;
-}
-
-void mov_l(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
-
-  for(int i=0; i<50; i++){
-    if((user_tetromino->tetromino.blocks[0].x - 50) == garbage->tetromino->blocks[i].x){
-      if(user_tetromino->tetromino.blocks[0].y == garbage->tetromino->blocks[i].y){
-	return;
+  for(int i=0; i<garbage->cnt; i++){
+    for(int j=0; j<4; j++){
+      if((user_tetromino->tetromino.blocks[j].x - 50 + offset) == garbage->tetromino->blocks[i].x){
+	if(user_tetromino->tetromino.blocks[j].y == garbage->tetromino->blocks[i].y){
+	  return;
+	}      
       }
-    }    
+    }   
   }
 
-  if(user_tetromino->tetromino.blocks[0].x == 0){
-    return;
+  for(int i=0; i<4; i++){
+    if(user_tetromino->tetromino.blocks[i].x == 450 && direction == 1){
+      return;
+    }
+    if(user_tetromino->tetromino.blocks[i].x == 0 && direction == 0){
+      return;
+    }
   }
   
   int x0 = user_tetromino->tetromino.blocks[0].x;
-  user_tetromino->tetromino.blocks[0].x = x0 - WIDTH/10;
+  int x1 = user_tetromino->tetromino.blocks[1].x;
+  int x2 = user_tetromino->tetromino.blocks[2].x;
+  int x3 = user_tetromino->tetromino.blocks[3].x;
+  
+  user_tetromino->tetromino.blocks[0].x = x0 - 50 + offset;
+  user_tetromino->tetromino.blocks[1].x = x1 - 50 + offset;
+  user_tetromino->tetromino.blocks[2].x = x2 - 50 + offset;
+  user_tetromino->tetromino.blocks[3].x = x3 - 50 + offset; 
   
   return;
 }
@@ -119,13 +95,27 @@ void gravitate(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
 
   if(var == 1){
     user_tetromino->busy = 0;
-    garbage->tetromino->blocks[garbage->cnt].x = user_tetromino->tetromino.blocks[0].x;
-    garbage->tetromino->blocks[garbage->cnt].y = user_tetromino->tetromino.blocks[0].y;
-    garbage->cnt++;
+
+    for(int i=0; i<4; i++){
+      garbage->tetromino->blocks[garbage->cnt].x = user_tetromino->tetromino.blocks[i].x;
+      garbage->tetromino->blocks[garbage->cnt].y = user_tetromino->tetromino.blocks[i].y;
+      garbage->cnt++;
+    }
+      
   }
+
   else if(var == 0){
+    
     int y0 = user_tetromino->tetromino.blocks[0].y;
-    user_tetromino->tetromino.blocks[0].y = y0 + HEIGHT/20;     
+    int y1 = user_tetromino->tetromino.blocks[1].y;
+    int y2 = user_tetromino->tetromino.blocks[2].y;
+    int y3 = user_tetromino->tetromino.blocks[3].y;
+    
+    user_tetromino->tetromino.blocks[0].y = y0 + HEIGHT/20;
+    user_tetromino->tetromino.blocks[1].y = y1 + HEIGHT/20;
+    user_tetromino->tetromino.blocks[2].y = y2 + HEIGHT/20;
+    user_tetromino->tetromino.blocks[3].y = y3 + HEIGHT/20;
+    
   }
   
   return;
@@ -137,12 +127,19 @@ void spawn(struct User_Tetromino *user_tetromino, int type){
   if(user_tetromino->busy == 0){
     switch(type){
     case 4:
-      
-      user_tetromino->tetromino.blocks[0].x = (WIDTH/10)*5;
-      user_tetromino->tetromino.blocks[0].y = 0;
-      user_tetromino->tetromino.blocks[0].w = WIDTH/10;      
-      user_tetromino->tetromino.blocks[0].h = HEIGHT/20;
 
+      for(int i=0; i<3; i++){
+	user_tetromino->tetromino.blocks[i].x = (WIDTH/10)*5 - 50 + 50*i;
+	user_tetromino->tetromino.blocks[i].y = 0;
+	user_tetromino->tetromino.blocks[i].w = WIDTH/10;      
+	user_tetromino->tetromino.blocks[i].h = HEIGHT/20;
+      }
+
+      user_tetromino->tetromino.blocks[3].x = (WIDTH/10)*5;
+      user_tetromino->tetromino.blocks[3].y = -50;
+      user_tetromino->tetromino.blocks[3].w = WIDTH/10;      
+      user_tetromino->tetromino.blocks[3].h = HEIGHT/20;      
+    
       user_tetromino->tetromino.type = 4;
 
       user_tetromino->tetromino.x = (WIDTH/10)*5;

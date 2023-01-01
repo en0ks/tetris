@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <time.h>
+#include <sys/time.h>
 #include <SDL2/SDL.h>
 #include <time.h>
 #include "header.h"
@@ -44,10 +44,7 @@ int main(int argc, char *argv[]){
     printf("Initializing renderer failed");
     return 1; 		  
   }
-
-  time_t start_time;
-  start_time = time(NULL);
-
+  
   struct User_Tetromino user_tetromino = {0};  
   struct Garbage garbage = {0};
  
@@ -55,7 +52,14 @@ int main(int argc, char *argv[]){
   for(int i=0; i<50; i++){
     garbage.tetromino->blocks[i] = init_rect;
   }
- 
+
+  struct timespec start;
+  struct timespec current;
+
+  int time_elapsed_ms = 0;
+
+  clock_gettime(CLOCK_MONOTONIC_RAW, &start);
+  
   while(!quit){
     //Spawn
     if(user_tetromino.busy == 0){
@@ -63,14 +67,16 @@ int main(int argc, char *argv[]){
     }
 
     //Fall
-    if(time(NULL) - start_time > DELAY){
-      
-      start_time = time(NULL);
-      
+    clock_gettime(CLOCK_MONOTONIC_RAW, &current);
+    time_elapsed_ms = (current.tv_sec - start.tv_sec)*1000 + (current.tv_nsec - start.tv_nsec)/1000000;
+    
+    if(time_elapsed_ms > 100){
+      clock_gettime(CLOCK_MONOTONIC_RAW, &start);
       if(user_tetromino.busy == 1){
-	gravitate(&user_tetromino, &garbage);
+	gravitate(&user_tetromino, &garbage);    
       }
     }
+
     
     while(SDL_PollEvent(&event)){
 
@@ -85,13 +91,13 @@ int main(int argc, char *argv[]){
 
 	}
 	if(event.key.keysym.sym==SDLK_DOWN){
-	  hdrop(&user_tetromino, &garbage);
+
 	}
 	if(event.key.keysym.sym==SDLK_LEFT){
-	  mov_l(&user_tetromino, &garbage);
+	  mov(&user_tetromino, &garbage, 0);
 	} 
 	if(event.key.keysym.sym==SDLK_RIGHT){
-	  mov_r(&user_tetromino, &garbage);	  
+	  mov(&user_tetromino, &garbage, 1);	  
 	}
 	if(SDL_GetModState() == KMOD_LCTRL){
 	  if(event.key.keysym.sym==SDLK_F4){
@@ -119,9 +125,13 @@ int main(int argc, char *argv[]){
       SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE);
       SDL_RenderFillRects(renderer, user_tetromino.tetromino.blocks, 4);
     }
+    //TODO: Fix render issues concerning garbage blocks. Presumably it
+    //happens because of garbage.cnt not properly been coded.
+    SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0xFF, SDL_ALPHA_OPAQUE);
+    for(int i=0; i<garbage.cnt*4; i++){
+      SDL_RenderFillRects(renderer, &(garbage.tetromino->blocks[i]), 4);
+    }
     
-    SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0xFF, SDL_ALPHA_OPAQUE);        
-    SDL_RenderFillRects(renderer, garbage.tetromino->blocks, garbage.cnt);
     
       
       
