@@ -18,11 +18,42 @@ struct Garbage{
 };
 
 int check_garbage(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
-void mov_r(struct User_Tetromino *user_tetromino);
-void mov_l(struct User_Tetromino *user_tetromino);
+void mov_r(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
+void mov_l(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
 void gravitate(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
 void spawn(struct User_Tetromino *user_tetromino, int type);
+void hdrop(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
 
+
+void hdrop(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
+
+  for(int i=0; i<20; i++){
+    for(int j=0; j<50; j++){
+
+      if((user_tetromino->tetromino.blocks[0].y + 50*i) == garbage->tetromino->blocks[j].y){
+	if(user_tetromino->tetromino.blocks[0].x == garbage->tetromino->blocks[j].x){
+	  
+	  user_tetromino->busy = 0;
+	  garbage->tetromino->blocks[garbage->cnt].x = user_tetromino->tetromino.blocks[0].x;
+	  garbage->tetromino->blocks[garbage->cnt].y = garbage->tetromino->blocks[j].y - 50;
+	  garbage->cnt++;
+
+	  return;
+	}
+      
+      }
+
+    }
+    if(50*i == 950){
+      user_tetromino->busy = 0;
+      garbage->tetromino->blocks[garbage->cnt].x = user_tetromino->tetromino.blocks[0].x;
+      garbage->tetromino->blocks[garbage->cnt].y = 950;
+      garbage->cnt++;
+    }
+  }
+  
+  return;
+}
 
 int check_garbage(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
 
@@ -42,16 +73,40 @@ int check_garbage(struct User_Tetromino *user_tetromino, struct Garbage *garbage
   return 0;
 }
 
-void mov_r(struct User_Tetromino *user_tetromino){
+void mov_r(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
 
+  for(int i=0; i<50; i++){
+    if((user_tetromino->tetromino.blocks[0].x + 50) == garbage->tetromino->blocks[i].x){
+      if(user_tetromino->tetromino.blocks[0].y == garbage->tetromino->blocks[i].y){
+	return;
+      }      
+    }    
+  }
+
+  if(user_tetromino->tetromino.blocks[0].x == 450){
+    return;
+  }
+  
   int x0 = user_tetromino->tetromino.blocks[0].x;
   user_tetromino->tetromino.blocks[0].x = x0 + WIDTH/10;
   
   return;
 }
 
-void mov_l(struct User_Tetromino *user_tetromino){
+void mov_l(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
 
+  for(int i=0; i<50; i++){
+    if((user_tetromino->tetromino.blocks[0].x - 50) == garbage->tetromino->blocks[i].x){
+      if(user_tetromino->tetromino.blocks[0].y == garbage->tetromino->blocks[i].y){
+	return;
+      }
+    }    
+  }
+
+  if(user_tetromino->tetromino.blocks[0].x == 0){
+    return;
+  }
+  
   int x0 = user_tetromino->tetromino.blocks[0].x;
   user_tetromino->tetromino.blocks[0].x = x0 - WIDTH/10;
   

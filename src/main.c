@@ -55,28 +55,20 @@ int main(int argc, char *argv[]){
   for(int i=0; i<50; i++){
     garbage.tetromino->blocks[i] = init_rect;
   }
-
-  //TODO: implement converting to garbage when block hits height 950.
  
   while(!quit){
+    //Spawn
+    if(user_tetromino.busy == 0){
+      spawn(&user_tetromino, 4);	
+    }
 
+    //Fall
     if(time(NULL) - start_time > DELAY){
       
       start_time = time(NULL);
-
-      /* Fall code. */
       
       if(user_tetromino.busy == 1){
-	//fall
 	gravitate(&user_tetromino, &garbage);
-      }
-      else if(user_tetromino.busy == 0){
-	//spawn
-	spawn(&user_tetromino, 4);	
-	//in f_spawn create 4 blocks and put them in user.
-      }
-      else{
-	//error warning
       }
     }
     
@@ -93,13 +85,13 @@ int main(int argc, char *argv[]){
 
 	}
 	if(event.key.keysym.sym==SDLK_DOWN){
-
+	  hdrop(&user_tetromino, &garbage);
 	}
 	if(event.key.keysym.sym==SDLK_LEFT){
-	  mov_l(&user_tetromino);
+	  mov_l(&user_tetromino, &garbage);
 	} 
 	if(event.key.keysym.sym==SDLK_RIGHT){
-	  mov_r(&user_tetromino);	  
+	  mov_r(&user_tetromino, &garbage);	  
 	}
 	if(SDL_GetModState() == KMOD_LCTRL){
 	  if(event.key.keysym.sym==SDLK_F4){
@@ -123,8 +115,10 @@ int main(int argc, char *argv[]){
     SDL_SetRenderDrawColor(renderer, 0x0, 0x0, 0x0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
 
-    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE);
-    SDL_RenderFillRects(renderer, user_tetromino.tetromino.blocks, 4);
+    if(user_tetromino.busy == 1){
+      SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE);
+      SDL_RenderFillRects(renderer, user_tetromino.tetromino.blocks, 4);
+    }
     
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0xFF, SDL_ALPHA_OPAQUE);        
     SDL_RenderFillRects(renderer, garbage.tetromino->blocks, garbage.cnt);
