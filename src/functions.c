@@ -17,6 +17,7 @@ struct Garbage{
   int cnt;
 };
 
+void rotate(struct User_Tetromino *user_tetromino, struct Garbage *garbage, int direction, int type);
 int check_garbage(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
 void mov(struct User_Tetromino *user_tetromino, struct Garbage *garbage, int direction);
 void gravitate(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
@@ -24,8 +25,60 @@ void spawn(struct User_Tetromino *user_tetromino, int type);
 void sdrop(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
 void signal_handler(int signum, int *flag);
 
-void signal_handler(int signum, int *flag){
-  *flag = 1;
+
+void rotate(struct User_Tetromino *user_tetromino, struct Garbage *garbage, int direction, int type){
+
+  switch(type){
+  case 4:
+    if(direction == 0 && user_tetromino->tetromino.orient == 0){
+      user_tetromino->tetromino.orient = 1;
+
+      int xs[4] = {0};
+      int indices[3] = {0};
+      int min, mid, max = -1;
+      
+      for(int i=0; i<4; i++){
+	xs[i] = user_tetromino->tetromino.blocks[i].x;
+      }
+
+      for(int i=0; i<4; i++){
+	if(xs[i] > max){
+	  max = xs[i];
+	  indices[0] = i;
+	}
+      }
+      min = max;
+      for(int i=0; i<4; i++){
+	if(xs[i] < min){
+	  min = xs[i];
+	  indices[1] = i;
+	}
+      }
+      for(int i=0; i<4; i++){
+	if(i != indices[0] && i != indices[1]){
+	  mid = xs[i];
+	  indices[2] = i;
+	}
+      }
+      //0: right, 1: left, 2: middle
+      user_tetromino->tetromino.blocks[indices[0]].x = user_tetromino->tetromino.blocks[indices[0]].x - 50;
+      user_tetromino->tetromino.blocks[indices[1]].x = user_tetromino->tetromino.blocks[indices[1]].x + 50;
+      user_tetromino->tetromino.blocks[indices[2]].x = user_tetromino->tetromino.blocks[indices[0]].x - 50;
+
+      user_tetromino->tetromino.blocks[indices[0]].y = user_tetromino->tetromino.blocks[indices[0]].y + 50;
+      user_tetromino->tetromino.blocks[indices[1]].y = user_tetromino->tetromino.blocks[indices[1]].y - 50;
+      user_tetromino->tetromino.blocks[indices[2]].y = user_tetromino->tetromino.blocks[indices[0]].y - 50;
+      //TODO: MAKE FUNCTION THAT WILL SORT BLOCKS IN USER TETROMINO BLOCKS TO MAKE ROTATION EASIER.
+    }
+    else if (direction == 1){
+      
+    }
+    else{
+      perror("rotate");
+    }
+  }
+  
+  return;
 }
 
 int check_garbage(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
@@ -35,14 +88,17 @@ int check_garbage(struct User_Tetromino *user_tetromino, struct Garbage *garbage
       return 1;
     }     
   }
-  
+
+  /*Redo at some point in time*/
   for(int i=0; i<garbage->cnt; i++){
     for(int j=0; j<4; j++){
-      if(garbage->tetromino->blocks[i].y - user_tetromino->tetromino.blocks[j].y == 50){
-	if(garbage->tetromino->blocks[i].x == user_tetromino->tetromino.blocks[j].x){
-	  return 1;
+      for(int k=0; k<4; k++){
+	if(garbage->tetromino[i].blocks[j].y - user_tetromino->tetromino.blocks[k].y == 50){
+	  if(garbage->tetromino[i].blocks[j].x == user_tetromino->tetromino.blocks[k].x){
+	    return 1;
+	  }      
 	}
-    }
+      }
     } 
   }
   
@@ -97,11 +153,11 @@ void gravitate(struct User_Tetromino *user_tetromino, struct Garbage *garbage){
     user_tetromino->busy = 0;
 
     for(int i=0; i<4; i++){
-      garbage->tetromino->blocks[garbage->cnt].x = user_tetromino->tetromino.blocks[i].x;
-      garbage->tetromino->blocks[garbage->cnt].y = user_tetromino->tetromino.blocks[i].y;
-      garbage->cnt++;
+      garbage->tetromino[garbage->cnt].blocks[i] = user_tetromino->tetromino.blocks[i];
     }
-      
+    
+    garbage->cnt = garbage->cnt + 1;
+    
   }
 
   else if(var == 0){

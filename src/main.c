@@ -49,10 +49,11 @@ int main(int argc, char *argv[]){
   struct Garbage garbage = {0};
  
   SDL_Rect init_rect = {-1, -1, 50, 50};
+  
   for(int i=0; i<50; i++){
     garbage.tetromino->blocks[i] = init_rect;
   }
-
+  
   struct timespec start;
   struct timespec current;
 
@@ -83,7 +84,9 @@ int main(int argc, char *argv[]){
       switch(event.type){
  		  
       case SDL_KEYDOWN:
-
+	if(event.key.keysym.sym==SDLK_x){
+	  rotate(&user_tetromino, &garbage, 0, 4);
+	}
 	if(event.key.keysym.sym==SDLK_c){
 
 	}
@@ -128,13 +131,13 @@ int main(int argc, char *argv[]){
     //TODO: Fix render issues concerning garbage blocks. Presumably it
     //happens because of garbage.cnt not properly been coded.
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0xFF, SDL_ALPHA_OPAQUE);
-    for(int i=0; i<garbage.cnt*4; i++){
-      SDL_RenderFillRects(renderer, &(garbage.tetromino->blocks[i]), 4);
+
+    //printf("%d\n", garbage.cnt);
+    
+    for(int i=0; i<garbage.cnt; i++){
+      SDL_RenderFillRects(renderer, garbage.tetromino[i].blocks, 4);
     }
-    
-    
-      
-      
+               
     /* Render rectangles.  */
     SDL_RenderPresent(renderer);
 
