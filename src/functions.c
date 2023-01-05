@@ -30,48 +30,75 @@ void rotate(struct User_Tetromino *user_tetromino, struct Garbage *garbage, int 
 
   switch(type){
   case 4:
-    if(direction == 0 && user_tetromino->tetromino.orient == 0){
-      user_tetromino->tetromino.orient = 1;
+    
+    int x0 = user_tetromino->tetromino.blocks[0].x;
+    int x1 = user_tetromino->tetromino.blocks[1].x;
+    int x2 = user_tetromino->tetromino.blocks[2].x;
+    int x3 = user_tetromino->tetromino.blocks[3].x;
 
-      int xs[4] = {0};
-      int indices[3] = {0};
-      int min, mid, max = -1;
-      
-      for(int i=0; i<4; i++){
-	xs[i] = user_tetromino->tetromino.blocks[i].x;
-      }
+    int y0 = user_tetromino->tetromino.blocks[0].y;
+    int y1 = user_tetromino->tetromino.blocks[1].y;
+    int y2 = user_tetromino->tetromino.blocks[2].y;
+    int y3 = user_tetromino->tetromino.blocks[3].y;
 
-      for(int i=0; i<4; i++){
-	if(xs[i] > max){
-	  max = xs[i];
-	  indices[0] = i;
-	}
-      }
-      min = max;
-      for(int i=0; i<4; i++){
-	if(xs[i] < min){
-	  min = xs[i];
-	  indices[1] = i;
-	}
-      }
-      for(int i=0; i<4; i++){
-	if(i != indices[0] && i != indices[1]){
-	  mid = xs[i];
-	  indices[2] = i;
-	}
-      }
-      //0: right, 1: left, 2: middle
-      user_tetromino->tetromino.blocks[indices[0]].x = user_tetromino->tetromino.blocks[indices[0]].x - 50;
-      user_tetromino->tetromino.blocks[indices[1]].x = user_tetromino->tetromino.blocks[indices[1]].x + 50;
-      user_tetromino->tetromino.blocks[indices[2]].x = user_tetromino->tetromino.blocks[indices[0]].x - 50;
+    int sign = 1;
 
-      user_tetromino->tetromino.blocks[indices[0]].y = user_tetromino->tetromino.blocks[indices[0]].y + 50;
-      user_tetromino->tetromino.blocks[indices[1]].y = user_tetromino->tetromino.blocks[indices[1]].y - 50;
-      user_tetromino->tetromino.blocks[indices[2]].y = user_tetromino->tetromino.blocks[indices[0]].y - 50;
-      //TODO: MAKE FUNCTION THAT WILL SORT BLOCKS IN USER TETROMINO BLOCKS TO MAKE ROTATION EASIER.
+    int orient = user_tetromino->tetromino.orient;
+    
+    if(direction == 1){
+      sign = -1;
+      if(orient == 0){user_tetromino->tetromino.orient = 3;}
+      if(orient == 1){user_tetromino->tetromino.orient = 0;}
+      if(orient == 2){user_tetromino->tetromino.orient = 1;}
+      if(orient == 3){user_tetromino->tetromino.orient = 2;}      
     }
-    else if (direction == 1){
-      
+    if(direction == 0){
+      if(orient == 0){user_tetromino->tetromino.orient = 1;}
+      if(orient == 1){user_tetromino->tetromino.orient = 2;}
+      if(orient == 2){user_tetromino->tetromino.orient = 3;}
+      if(orient == 3){user_tetromino->tetromino.orient = 0;}      
+    }
+    if(1){
+      if(orient == 0){
+  
+	user_tetromino->tetromino.blocks[0].x = x0 + 50;
+	user_tetromino->tetromino.blocks[2].x = x2 - 50;
+	user_tetromino->tetromino.blocks[3].x = x3 - 50*sign;
+						       
+	user_tetromino->tetromino.blocks[0].y = y0 + 50*sign;
+	user_tetromino->tetromino.blocks[2].y = y2 - 50*sign;
+	user_tetromino->tetromino.blocks[3].y = y3 + 50;      
+      }						     
+      else if(orient == 1){	       
+
+	user_tetromino->tetromino.blocks[0].x = x0 + 50*sign;
+	user_tetromino->tetromino.blocks[2].x = x2 - 50*sign;
+	user_tetromino->tetromino.blocks[3].x = x3 + 50;
+
+	user_tetromino->tetromino.blocks[0].y = y0 - 50;
+	user_tetromino->tetromino.blocks[2].y = y2 + 50;
+	user_tetromino->tetromino.blocks[3].y = y3 + 50*sign;    	
+      }
+      else if(orient == 2){
+  
+	user_tetromino->tetromino.blocks[0].x = x0 - 50;
+	user_tetromino->tetromino.blocks[2].x = x2 + 50;
+	user_tetromino->tetromino.blocks[3].x = x3 + 50*sign;
+
+	user_tetromino->tetromino.blocks[0].y = y0 - 50*sign;
+	user_tetromino->tetromino.blocks[2].y = y2 + 50*sign;
+	user_tetromino->tetromino.blocks[3].y = y3 - 50;    	
+      }
+      else if(orient == 3){
+  
+	user_tetromino->tetromino.blocks[0].x = x0 - 50*sign;
+	user_tetromino->tetromino.blocks[2].x = x2 + 50*sign;
+	user_tetromino->tetromino.blocks[3].x = x3 - 50;
+
+	user_tetromino->tetromino.blocks[0].y = y0 + 50;
+	user_tetromino->tetromino.blocks[2].y = y2 - 50;
+	user_tetromino->tetromino.blocks[3].y = y3 - 50*sign;    	
+      }      
     }
     else{
       perror("rotate");

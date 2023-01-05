@@ -71,7 +71,7 @@ int main(int argc, char *argv[]){
     clock_gettime(CLOCK_MONOTONIC_RAW, &current);
     time_elapsed_ms = (current.tv_sec - start.tv_sec)*1000 + (current.tv_nsec - start.tv_nsec)/1000000;
     
-    if(time_elapsed_ms > 100){
+    if(time_elapsed_ms > 200){
       clock_gettime(CLOCK_MONOTONIC_RAW, &start);
       if(user_tetromino.busy == 1){
 	gravitate(&user_tetromino, &garbage);    
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]){
 	  rotate(&user_tetromino, &garbage, 0, 4);
 	}
 	if(event.key.keysym.sym==SDLK_c){
-
+	  rotate(&user_tetromino, &garbage, 1, 4);
 	}
 	if(event.key.keysym.sym==SDLK_UP){
 
