@@ -61,13 +61,13 @@ int main(int argc, char *argv[]){
   struct timespec current;
 
   int time_elapsed_ms = 0;
-  int delay = 200;
+  int delay = 400;
   clock_gettime(CLOCK_MONOTONIC_RAW, &start);
   
   while(!quit){
     //Spawn
     if(user_tetromino.busy == 0){
-      delay = 200;
+      delay = 400;
       spawn(&user_tetromino, 0);	
     }
 
@@ -89,10 +89,10 @@ int main(int argc, char *argv[]){
  		  
       case SDL_KEYDOWN:
 	if(event.key.keysym.sym==SDLK_x){
-	  rotate(&user_tetromino, &garbage, 0, 4);
+	  rotate(&user_tetromino, &garbage, 0, user_tetromino.tetromino.type);
 	}
 	if(event.key.keysym.sym==SDLK_c){
-	  rotate(&user_tetromino, &garbage, 1, 4);
+	  rotate(&user_tetromino, &garbage, 1, user_tetromino.tetromino.type);
 	}
 	if(event.key.keysym.sym==SDLK_UP){
 
