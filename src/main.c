@@ -1,9 +1,12 @@
+//For some reason after n garbage blocks have been added, the move
+//barrier ceases to work. TODO: Fix this.
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/time.h>
 #include <SDL2/SDL.h>
 #include <time.h>
+#include <limits.h>
 #include "header.h"
 #include "functions.c"
 
@@ -58,22 +61,23 @@ int main(int argc, char *argv[]){
   struct timespec current;
 
   int time_elapsed_ms = 0;
-
+  int delay = 200;
   clock_gettime(CLOCK_MONOTONIC_RAW, &start);
   
   while(!quit){
     //Spawn
     if(user_tetromino.busy == 0){
-      spawn(&user_tetromino, 4);	
+      delay = 200;
+      spawn(&user_tetromino, 0);	
     }
 
     //Fall
     clock_gettime(CLOCK_MONOTONIC_RAW, &current);
     time_elapsed_ms = (current.tv_sec - start.tv_sec)*1000 + (current.tv_nsec - start.tv_nsec)/1000000;
     
-    if(time_elapsed_ms > 200){
+    if(time_elapsed_ms > delay){
       clock_gettime(CLOCK_MONOTONIC_RAW, &start);
-      if(user_tetromino.busy == 1){
+      if(user_tetromino.busy == 1){       
 	gravitate(&user_tetromino, &garbage);    
       }
     }
@@ -94,7 +98,7 @@ int main(int argc, char *argv[]){
 
 	}
 	if(event.key.keysym.sym==SDLK_DOWN){
-
+	  sdrop(&delay);
 	}
 	if(event.key.keysym.sym==SDLK_LEFT){
 	  mov(&user_tetromino, &garbage, 0);
@@ -131,7 +135,6 @@ int main(int argc, char *argv[]){
     //TODO: Fix render issues concerning garbage blocks. Presumably it
     //happens because of garbage.cnt not properly been coded.
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0xFF, SDL_ALPHA_OPAQUE);
-
     //printf("%d\n", garbage.cnt);
     
     for(int i=0; i<garbage.cnt; i++){
