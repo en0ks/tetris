@@ -50,25 +50,33 @@ int main(int argc, char *argv[]){
   
   struct User_Tetromino user_tetromino = {0};  
   struct Garbage garbage = {0};
- 
-  SDL_Rect init_rect = {-1, -1, 50, 50};
-  
-  for(int i=0; i<50; i++){
-    garbage.tetromino->blocks[i] = init_rect;
-  }
-  
+    
   struct timespec start;
   struct timespec current;
 
+  SDL_Rect init_rect = {-62, 0, 0, 0};
+
+  for(int i=0; i<50; i++){
+    for(int j=0; j<4; j++){
+      garbage.tetromino[i].blocks[j] = init_rect;	
+    }
+  }
+  
   int time_elapsed_ms = 0;
   int delay = 400;
   clock_gettime(CLOCK_MONOTONIC_RAW, &start);
   
   while(!quit){
+
+    if(garbage.cnt == 420){
+      garbage.cnt = 210;
+    }
+    
     //Spawn
     if(user_tetromino.busy == 0){
       delay = 400;
-      spawn(&user_tetromino, 0);	
+      spawn(&user_tetromino, 4);
+      printf("%d\n", garbage.cnt);
     }
 
     //Fall
@@ -82,6 +90,7 @@ int main(int argc, char *argv[]){
       }
     }
 
+    clear_line(&garbage);
     
     while(SDL_PollEvent(&event)){
 
@@ -97,7 +106,7 @@ int main(int argc, char *argv[]){
 	if(event.key.keysym.sym==SDLK_UP){
 
 	}
-	if(event.key.keysym.sym==SDLK_DOWN){
+	if(event.key.keysym.sym==SDLK_DOWN || event.key.keysym.sym==SDLK_SPACE){
 	  sdrop(&delay);
 	}
 	if(event.key.keysym.sym==SDLK_LEFT){
@@ -124,6 +133,8 @@ int main(int argc, char *argv[]){
 
     }
 
+    
+    
     /* Render structs.  */
     SDL_SetRenderDrawColor(renderer, 0x0, 0x0, 0x0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
