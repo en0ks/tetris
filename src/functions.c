@@ -14,8 +14,8 @@ struct User_Tetromino{
 //TODO: figure out how to clean garbage.cnt and recycle old.
 
 struct Garbage{
-  struct Tetromino tetromino[50]; //u never know
   int cnt;
+  struct Tetromino tetromino[];  
 };
 
 void rotate(struct User_Tetromino *user_tetromino, struct Garbage *garbage, int direction, int type);
@@ -102,8 +102,7 @@ void sdrop(int *delay){
   return;
 }
 
-void
-rotate(struct User_Tetromino *user_tetromino, struct Garbage *garbage, int direction, int type){
+void rotate(struct User_Tetromino *user_tetromino, struct Garbage *garbage, int direction, int type){
 
   int x0 = user_tetromino->tetromino.blocks[0].x;
   int x1 = user_tetromino->tetromino.blocks[1].x;

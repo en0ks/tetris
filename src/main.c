@@ -29,10 +29,10 @@ int main(int argc, char *argv[]){
     printf("Initialization failed.");		
     return 1;
   }
- 
+  
   SDL_Window *window = NULL;
   SDL_Renderer *renderer = NULL;
-
+  
   /* Positive x-axis and negative y-axis.  */
   window = SDL_CreateWindow("Quad", 0, 0, WIDTH, HEIGHT, 0);
   
@@ -48,35 +48,34 @@ int main(int argc, char *argv[]){
     return 1; 		  
   }
   
-  struct User_Tetromino user_tetromino = {0};  
-  struct Garbage garbage = {0};
-    
+  struct User_Tetromino user_tetromino = {0};
+  struct Garbage *garbage = malloc(sizeof(struct Garbage) + 1 * sizeof(struct Tetromino));
+
+  (*garbage).cnt = 0;
+  
   struct timespec start;
   struct timespec current;
-
-  SDL_Rect init_rect = {-62, 0, 0, 0};
-
-  for(int i=0; i<50; i++){
-    for(int j=0; j<4; j++){
-      garbage.tetromino[i].blocks[j] = init_rect;	
-    }
-  }
   
   int time_elapsed_ms = 0;
   int delay = 400;
   clock_gettime(CLOCK_MONOTONIC_RAW, &start);
+
+  int size = 1;
   
   while(!quit){
 
-    if(garbage.cnt == 420){
-      garbage.cnt = 210;
+    if(garbage->cnt == 1){
+      garbage = realloc(garbage, sizeof(struct Garbage) + ++size * 1 * sizeof(struct Tetromino));
+    }
+    
+    if(garbage->cnt == 420){
+      garbage->cnt = 210;
     }
     
     //Spawn
     if(user_tetromino.busy == 0){
       delay = 400;
       spawn(&user_tetromino, 4);
-      printf("%d\n", garbage.cnt);
     }
 
     //Fall
@@ -86,11 +85,11 @@ int main(int argc, char *argv[]){
     if(time_elapsed_ms > delay){
       clock_gettime(CLOCK_MONOTONIC_RAW, &start);
       if(user_tetromino.busy == 1){       
-	gravitate(&user_tetromino, &garbage);    
+	gravitate(&user_tetromino, garbage);    
       }
     }
 
-    clear_line(&garbage);
+    clear_line(garbage);
     
     while(SDL_PollEvent(&event)){
 
@@ -98,22 +97,19 @@ int main(int argc, char *argv[]){
  		  
       case SDL_KEYDOWN:
 	if(event.key.keysym.sym==SDLK_x){
-	  rotate(&user_tetromino, &garbage, 0, user_tetromino.tetromino.type);
+	  rotate(&user_tetromino, garbage, 0, user_tetromino.tetromino.type);
 	}
-	if(event.key.keysym.sym==SDLK_c){
-	  rotate(&user_tetromino, &garbage, 1, user_tetromino.tetromino.type);
-	}
-	if(event.key.keysym.sym==SDLK_UP){
-
+	if(event.key.keysym.sym==SDLK_c || event.key.keysym.sym==SDLK_UP){
+	  rotate(&user_tetromino, garbage, 1, user_tetromino.tetromino.type);
 	}
 	if(event.key.keysym.sym==SDLK_DOWN || event.key.keysym.sym==SDLK_SPACE){
 	  sdrop(&delay);
 	}
 	if(event.key.keysym.sym==SDLK_LEFT){
-	  mov(&user_tetromino, &garbage, 0);
+	  mov(&user_tetromino, garbage, 0);
 	} 
 	if(event.key.keysym.sym==SDLK_RIGHT){
-	  mov(&user_tetromino, &garbage, 1);	  
+	  mov(&user_tetromino, garbage, 1);	  
 	}
 	if(SDL_GetModState() == KMOD_LCTRL){
 	  if(event.key.keysym.sym==SDLK_F4){
@@ -129,11 +125,7 @@ int main(int argc, char *argv[]){
       default:
 	break;
       }
-
-
-    }
-
-    
+    }   
     
     /* Render structs.  */
     SDL_SetRenderDrawColor(renderer, 0x0, 0x0, 0x0, SDL_ALPHA_OPAQUE);
@@ -143,13 +135,11 @@ int main(int argc, char *argv[]){
       SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE);
       SDL_RenderFillRects(renderer, user_tetromino.tetromino.blocks, 4);
     }
-    //TODO: Fix render issues concerning garbage blocks. Presumably it
-    //happens because of garbage.cnt not properly been coded.
+    //Test garbage->cnt > 410
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0xFF, SDL_ALPHA_OPAQUE);
-    //printf("%d\n", garbage.cnt);
     
-    for(int i=0; i<garbage.cnt; i++){
-      SDL_RenderFillRects(renderer, garbage.tetromino[i].blocks, 4);
+    for(int i=0; i<garbage->cnt; i++){
+      SDL_RenderFillRects(renderer, garbage->tetromino[i].blocks, 4);
     }
                
     /* Render rectangles.  */
@@ -158,5 +148,6 @@ int main(int argc, char *argv[]){
   }
   
   SDL_Quit();
+  
   return 0;  
 }
