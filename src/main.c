@@ -71,7 +71,7 @@ int main(int argc, char *argv[]){
     //Spawn
     if(user_tetromino.busy == 0){
       delay = 400;
-      spawn(&user_tetromino, 2);
+      spawn(&user_tetromino, 6);
     }
 
     //Fall
