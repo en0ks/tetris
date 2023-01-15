@@ -68,14 +68,10 @@ int main(int argc, char *argv[]){
       garbage = realloc(garbage, sizeof(struct Garbage) + ++size * 1 * sizeof(struct Tetromino));
     }
     
-    if(garbage->cnt == 420){
-      garbage->cnt = 210;
-    }
-    
     //Spawn
     if(user_tetromino.busy == 0){
       delay = 400;
-      spawn(&user_tetromino, 4);
+      spawn(&user_tetromino, 2);
     }
 
     //Fall
@@ -100,7 +96,7 @@ int main(int argc, char *argv[]){
 	  rotate(&user_tetromino, garbage, 0, user_tetromino.tetromino.type);
 	}
 	if(event.key.keysym.sym==SDLK_c || event.key.keysym.sym==SDLK_UP){
-	  rotate(&user_tetromino, garbage, 1, user_tetromino.tetromino.type);
+	  rotate(&user_tetromino, garbage, 1, user_tetromino.tetromino.type);	  
 	}
 	if(event.key.keysym.sym==SDLK_DOWN || event.key.keysym.sym==SDLK_SPACE){
 	  sdrop(&delay);

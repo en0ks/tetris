@@ -32,8 +32,10 @@ void clear_line(struct Garbage *garbage){
   
   for(int i=0; i<garbage->cnt; i++){
     for(int j=0; j<4; j++){
+      
       int index_x = (garbage->tetromino[i].blocks[j].x)/50;
       int index_y = (garbage->tetromino[i].blocks[j].y)/50;
+      
       if(index_x >= 0 && index_x <= 450 && index_y >= 0 && index_y <= 950){
 	board[index_x][index_y] = 1;
       }      
@@ -196,19 +198,124 @@ void rotate(struct User_Tetromino *user_tetromino, struct Garbage *garbage, int 
     break;
   case 1:
     break;
-  case 4:
-      if(orient == 0){
-	user_tetromino->tetromino.blocks[0].x = x0 + 50;
-	user_tetromino->tetromino.blocks[2].x = x2 - 50;
-	user_tetromino->tetromino.blocks[3].x = x3 - 50*sign;
+  case 2:
 
-	user_tetromino->tetromino.blocks[0].y = y0 + 50*sign;
-	user_tetromino->tetromino.blocks[2].y = y2 - 50*sign;
+    if(orient == 0){
+      if(direction == 0){
+	user_tetromino->tetromino.blocks[0].x = x0;
+	user_tetromino->tetromino.blocks[1].x = x1 - 50;	
+	user_tetromino->tetromino.blocks[2].x = x2;
+	user_tetromino->tetromino.blocks[3].x = x3 - 50;
+
+	user_tetromino->tetromino.blocks[0].y = y0 + 100;
+	user_tetromino->tetromino.blocks[1].y = y1 + 50;	
+	user_tetromino->tetromino.blocks[2].y = y2;
+	user_tetromino->tetromino.blocks[3].y = y3 - 50;	
+      }
+      else{
+	user_tetromino->tetromino.blocks[0].x = x0 + 100;
+	user_tetromino->tetromino.blocks[1].x = x1 + 50;	
+	user_tetromino->tetromino.blocks[2].x = x2;
+	user_tetromino->tetromino.blocks[3].x = x3 - 50;
+
+	user_tetromino->tetromino.blocks[0].y = y0;
+	user_tetromino->tetromino.blocks[1].y = y1 + 50;	
+	user_tetromino->tetromino.blocks[2].y = y2;
 	user_tetromino->tetromino.blocks[3].y = y3 + 50;
       }
-      else if(orient == 1){
-	user_tetromino->tetromino.blocks[0].x = x0 + 50*sign;
-	user_tetromino->tetromino.blocks[2].x = x2 - 50*sign;
+    }
+
+    if(orient == 1){
+      if(direction == 0){
+	user_tetromino->tetromino.blocks[0].x = x0 + 100;
+	user_tetromino->tetromino.blocks[1].x = x1 + 50;	
+	user_tetromino->tetromino.blocks[2].x = x2;
+	user_tetromino->tetromino.blocks[3].x = x3 - 50;
+
+	user_tetromino->tetromino.blocks[0].y = y0;
+	user_tetromino->tetromino.blocks[1].y = y1 + 50;	
+	user_tetromino->tetromino.blocks[2].y = y2;
+	user_tetromino->tetromino.blocks[3].y = y3 + 50;
+      }
+      else{
+	user_tetromino->tetromino.blocks[0].x = x0;
+	user_tetromino->tetromino.blocks[1].x = x1 + 50;	
+	user_tetromino->tetromino.blocks[2].x = x2;
+	user_tetromino->tetromino.blocks[3].x = x3 + 50;
+
+	user_tetromino->tetromino.blocks[0].y = y0 - 100;
+	user_tetromino->tetromino.blocks[1].y = y1 - 50;	
+	user_tetromino->tetromino.blocks[2].y = y2;
+	user_tetromino->tetromino.blocks[3].y = y3 + 50;	
+      }
+    }
+
+    if(orient == 2){
+      if(direction == 0){
+	user_tetromino->tetromino.blocks[0].x = x0;
+	user_tetromino->tetromino.blocks[1].x = x1 + 50;	
+	user_tetromino->tetromino.blocks[2].x = x2;
+	user_tetromino->tetromino.blocks[3].x = x3 + 50;
+
+	user_tetromino->tetromino.blocks[0].y = y0 - 100;
+	user_tetromino->tetromino.blocks[1].y = y1 - 50;	
+	user_tetromino->tetromino.blocks[2].y = y2;
+	user_tetromino->tetromino.blocks[3].y = y3 + 50;
+      }
+      else{
+
+
+	user_tetromino->tetromino.blocks[0].x = x0 - 100;
+	user_tetromino->tetromino.blocks[1].x = x1 - 50;	
+	user_tetromino->tetromino.blocks[2].x = x2;
+	user_tetromino->tetromino.blocks[3].x = x3 + 50;
+
+	user_tetromino->tetromino.blocks[0].y = y0;
+	user_tetromino->tetromino.blocks[1].y = y1 - 50;	
+	user_tetromino->tetromino.blocks[2].y = y2;
+	user_tetromino->tetromino.blocks[3].y = y3 - 50;	
+      }
+    }
+    
+    if(orient == 3){
+      if(direction == 0){
+	user_tetromino->tetromino.blocks[0].x = x0 - 100;
+	user_tetromino->tetromino.blocks[1].x = x1 - 50;	
+	user_tetromino->tetromino.blocks[2].x = x2;
+	user_tetromino->tetromino.blocks[3].x = x3 + 50;
+
+	user_tetromino->tetromino.blocks[0].y = y0;
+	user_tetromino->tetromino.blocks[1].y = y1 - 50;	
+	user_tetromino->tetromino.blocks[2].y = y2;
+	user_tetromino->tetromino.blocks[3].y = y3 - 50;
+      }
+      else{
+	user_tetromino->tetromino.blocks[0].x = x0;
+	user_tetromino->tetromino.blocks[1].x = x1 - 50;
+	user_tetromino->tetromino.blocks[2].x = x2;
+	user_tetromino->tetromino.blocks[3].x = x3 - 50;
+
+	user_tetromino->tetromino.blocks[0].y = y0 + 100;
+	user_tetromino->tetromino.blocks[1].y = y1 + 50;
+	user_tetromino->tetromino.blocks[2].y = y2;
+	user_tetromino->tetromino.blocks[3].y = y3 - 50;	
+      }
+    }
+    
+    break;
+  case 4:
+    if(orient == 0){
+      user_tetromino->tetromino.blocks[0].x = x0 + 50;
+      user_tetromino->tetromino.blocks[2].x = x2 - 50;
+      user_tetromino->tetromino.blocks[3].x = x3 - 50*sign;
+
+      user_tetromino->tetromino.blocks[0].y = y0 + 50*sign;
+      user_tetromino->tetromino.blocks[2].y = y2 - 50*sign;
+      user_tetromino->tetromino.blocks[3].y = y3 + 50;
+    }
+    else if(orient == 1){
+      user_tetromino->tetromino.blocks[0].x = x0 + 50*sign;
+      user_tetromino->tetromino.blocks[2].x = x2 - 50*sign;
 	user_tetromino->tetromino.blocks[3].x = x3 + 50;
 
 	user_tetromino->tetromino.blocks[0].y = y0 - 50;
@@ -397,7 +504,33 @@ void spawn(struct User_Tetromino *user_tetromino, int type){
       user_tetromino->tetromino.orient = 0;
 
       user_tetromino->busy = 1;
+    case 2:
+      //z
 
+      for(int i=0; i<2; i++){
+	
+	user_tetromino->tetromino.blocks[i].x = (WIDTH/10)*5 - 50 + 50 * i;
+	user_tetromino->tetromino.blocks[i].y = 0;
+	user_tetromino->tetromino.blocks[i].w = WIDTH/10;
+	user_tetromino->tetromino.blocks[i].h = HEIGHT/20;
+       
+      }
+	
+      for(int i=0; i<2; i++){
+	
+	user_tetromino->tetromino.blocks[i + 2].x = (WIDTH/10)*5 + 50 * i;
+	user_tetromino->tetromino.blocks[i + 2].y = 50;
+	user_tetromino->tetromino.blocks[i + 2].w = WIDTH/10;
+	user_tetromino->tetromino.blocks[i + 2].h = HEIGHT/20;
+       
+      }
+      
+      user_tetromino->tetromino.type = 2;
+
+      user_tetromino->tetromino.orient = 0;
+
+      user_tetromino->busy = 1;
+      
       break;
     case 4:
 
