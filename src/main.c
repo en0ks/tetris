@@ -17,7 +17,9 @@
    this struct User and Tet. */
   
 int main(int argc, char *argv[]){
-		       	
+
+  srand(time(NULL));
+  
   /* Refactor code: develop this game without the questionable array int **board.
      Doing this will make this code easier extensibe code. */
   
@@ -63,7 +65,7 @@ int main(int argc, char *argv[]){
   int size = 1;
   
   while(!quit){
-
+    
     if(garbage->cnt == 1){
       garbage = realloc(garbage, sizeof(struct Garbage) + ++size * 1 * sizeof(struct Tetromino));
     }
@@ -71,7 +73,7 @@ int main(int argc, char *argv[]){
     //Spawn
     if(user_tetromino.busy == 0){
       delay = 400;
-      spawn(&user_tetromino, 6);
+      spawn(&user_tetromino, get_random_number());
     }
 
     //Fall
@@ -122,6 +124,32 @@ int main(int argc, char *argv[]){
 	break;
       }
     }   
+
+    int flag = 0;
+    for(int i=0; i<4; i++){
+      if(user_tetromino.tetromino.blocks[i].x == -50)
+	{
+	  flag = 1;
+	}
+    }
+
+    for(int i=0; i<4; i++){
+      if(user_tetromino.tetromino.blocks[i].x == 500)
+	{
+	  flag = 2;
+	}
+    }
+
+
+    for(int i=0; i<4; i++){
+      if(flag == 1){
+	user_tetromino.tetromino.blocks[i].x = user_tetromino.tetromino.blocks[i].x + 50;
+      }
+      else if(flag == 2){
+	user_tetromino.tetromino.blocks[i].x = user_tetromino.tetromino.blocks[i].x - 50;	
+      }
+      else{flag = 0;}
+    }    
     
     /* Render structs.  */
     SDL_SetRenderDrawColor(renderer, 0x0, 0x0, 0x0, SDL_ALPHA_OPAQUE);

@@ -24,6 +24,41 @@ void gravitate(struct User_Tetromino *user_tetromino, struct Garbage *garbage);
 void spawn(struct User_Tetromino *user_tetromino, int type);
 void sdrop(int *delay);
 void clear_line(struct Garbage *garbage);
+int get_random_number();
+
+
+int get_random_number(){
+
+  static int results[7] = {0, 1, 2, 3, 4, 5, 6};
+  
+  int result = rand() % 7;
+  int all_good = 0;
+  
+  for(int i=0; i<7; i++){
+    if(result == results[i]){
+      results[i] = -1;
+      all_good = 1;
+      break;
+    }
+  }
+
+  if(all_good == 0){
+    get_random_number();
+  }
+
+  int cnt = 0;
+  for(int i=0; i<7; i++){
+    cnt += results[i];
+    if(cnt == -7){
+      for(int i=0; i<7; i++){
+	results[i] = i;
+      }
+      break;
+    }
+  }
+  
+  return result;
+}
 
 void clear_line(struct Garbage *garbage){
 
@@ -784,6 +819,8 @@ void spawn(struct User_Tetromino *user_tetromino, int type){
       user_tetromino->tetromino.orient = 0;
 
       user_tetromino->busy = 1;
+
+      break;
     case 2:
       //z
 
